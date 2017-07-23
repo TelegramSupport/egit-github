@@ -13,6 +13,7 @@ package org.eclipse.egit.github.core.event;
 
 import java.io.Serializable;
 
+import org.eclipse.egit.github.core.Label;
 import org.eclipse.egit.github.core.PullRequest;
 
 /**
@@ -27,6 +28,8 @@ public class PullRequestPayload extends EventPayload implements Serializable {
 	private int number;
 
 	private PullRequest pullRequest;
+
+	private Label label;
 
 	/**
 	 * @return action
@@ -58,6 +61,14 @@ public class PullRequestPayload extends EventPayload implements Serializable {
 	public PullRequestPayload setNumber(int number) {
 		this.number = number;
 		return this;
+	}
+
+	public Label getLabel() {
+		return label;
+	}
+
+	public void setLabel(Label label) {
+		this.label = label;
 	}
 
 	/**

@@ -10,17 +10,19 @@
  *******************************************************************************/
 package org.eclipse.egit.github.core.tests;
 
-import static org.eclipse.egit.github.core.event.Event.TYPE_FOLLOW;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import org.eclipse.egit.github.core.client.EventFormatter;
 import org.eclipse.egit.github.core.client.GsonUtils;
 import org.eclipse.egit.github.core.event.Event;
 import org.eclipse.egit.github.core.event.EventPayload;
 import org.eclipse.egit.github.core.event.FollowPayload;
+import org.eclipse.egit.github.core.event.PullRequestPayload;
 import org.junit.Test;
+
+import static org.eclipse.egit.github.core.event.Event.TYPE_FOLLOW;
+import static org.eclipse.egit.github.core.event.Event.TYPE_PULL_REQUEST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests of {@link EventFormatter}
@@ -70,5 +72,38 @@ public class EventFormatterTest {
 		Event event = GsonUtils.fromJson("{}", Event.class);
 		assertNotNull(event);
 		assertNull(event.getPayload());
+	}
+
+	private static final String labeledActionPullRequestEventText = "{\"type\":\"" + TYPE_PULL_REQUEST
+			+ "\",\"payload\":{\n" +
+			"  \"action\": \"labeled\",\n" +
+			"  \"number\": 1,\n" +
+			"  \"pull_request\": { },\n" +
+			"  \"label\": {\n" +
+			"    \"id\": 518329077,\n" +
+			"    \"url\": \"url_enhancement\",\n" +
+			"    \"name\": \"enhancement\",\n" +
+			"    \"color\": \"84b6eb\",\n" +
+			"    \"default\": true\n" +
+			"  }" +
+			"}}";
+
+	@Test
+	public void pullRequestPayload() {
+		Event event = GsonUtils.fromJson(labeledActionPullRequestEventText, Event.class);
+		assertNotNull(event);
+		assertNotNull(event.getPayload());
+		assertEquals(PullRequestPayload.class, event.getPayload().getClass());
+	}
+
+	@Test
+	public void labeledPullRequestPayload() {
+		Event event = GsonUtils.fromJson(labeledActionPullRequestEventText, Event.class);
+		PullRequestPayload pullRequestPayload = (PullRequestPayload)event.getPayload();
+		assertEquals("labeled", pullRequestPayload.getAction());
+		assertNotNull(pullRequestPayload.getLabel());
+		assertEquals("enhancement", pullRequestPayload.getLabel().getName());
+		assertEquals("84b6eb", pullRequestPayload.getLabel().getColor());
+		assertEquals("url_enhancement", pullRequestPayload.getLabel().getUrl());
 	}
 }
